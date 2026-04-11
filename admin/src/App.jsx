@@ -9,7 +9,7 @@ import Login from "./component/Login.jsx";
 import { ToastContainer } from "react-toastify";
 import Shipping from "./pages/Shipping.jsx";
 
-export const backendUrl = "http://localhost:4000";
+export const backendUrl = "https://backend-ecommerce-rouge.vercel.app";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
