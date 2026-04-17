@@ -14,22 +14,33 @@ const sendTelegramNotification = async (order) => {
         const token = process.env.TELEGRAM_BOT_TOKEN;
         const chatId = process.env.TELEGRAM_CHAT_ID;
 
+        // 1. تعريف التاريخ أولاً (الإصلاح هنا)
+        const orderDate = new Date().toLocaleString('ar-EG', {
+            timeZone: 'Africa/Cairo',
+            hour12: true,
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
         const itemsList = order.items.map((item, index) => {
             return `${index + 1}- ${item.name} (${item.quantity} x ${item.price} EGP)`;
         }).join('\n');
 
+        // 2. الآن يمكنك استخدام orderDate داخل الرسالة بدون أخطاء
         const message = `
 📦 *إشعار أوردر جديد* 📦
 ------------------------------
+⏰ *التاريخ:* ${orderDate}
 👤 *العميل:* ${order.address.firstName} ${order.address.lastName}
 📞 *الهاتف:* ${order.address.phone}
 📍 *المحافظة:* ${order.address.state}
 🏙️ *المدينة:* ${order.address.city}
-⏰ *التاريخ:* ${orderDate}
 
 🛍️ *المنتجات:*
 ${itemsList}
-
 
 💰 *الإجمالي:* *${order.amount} EGP*
 💳 *الدفع:* ${order.paymentMethod}
@@ -41,7 +52,7 @@ ${itemsList}
         await axios.post(url, {
             chat_id: chatId,
             text: message,
-            parse_mode: 'Markdown' // عشان يخلي الخط Bold وشكله حلو
+            parse_mode: 'Markdown'
         });
 
         console.log("✅ Telegram Notification Sent!");
