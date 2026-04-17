@@ -1,69 +1,25 @@
-// import jwt from 'jsonwebtoken'
-//
-// const authUser = async (req , res , next) => {
-//     const {token} = req.headers;
-//     if(!token) {
-//         return res.json({success:false , message: 'Not Autorid login again'})
-//
-//     }
-//
-//     try{
-//         const token_decode = jwt.verify(token,process.env.JWT_SECRET)
-//         // req.body.userId = token_decode.id
-//         req.userId = token_decode.id
-//         req.userId = token_decode.userId;
-//
-//         next()
-//     }catch(error) {
-//         console.log(error)
-//         res.json({success:false , message:error.message})
-//     }
-//
-//
-//
-// }
-//
-// export default authUser
 import jwt from 'jsonwebtoken';
 
 const authUser = async (req, res, next) => {
     const { token } = req.headers;
 
+    // لو مفيش توكن، هنعديه عادي ونخلي الـ userId فاضي
     if (!token) {
-        return res.status(401).json({ success: false, message: 'No token provided' });
+        req.userId = null; 
+        return next();
     }
 
     try {
         const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-        req.userId = token_decode.userId; // ✅ Only this
+        req.userId = token_decode.id || token_decode.userId; 
         next();
     } catch (error) {
-        console.log("❌ Token verification error:", error);
-        res.status(401).json({ success: false, message: error.message });
+        // لو التوكن منتهي أو فيه مشكلة، برضه هنعديه كـ Guest 
+        // عشان الأوردر ميفشلش لو اليوزر نسي يسجل دخول
+        console.log("⚠️ Token invalid, proceeding as guest");
+        req.userId = null;
+        next();
     }
 };
 
 export default authUser;
-// import jwt from 'jsonwebtoken';
-//
-// const authUser = async (req, res, next) => {
-//     const authHeader = req.headers.authorization;
-//     const token = authHeader && authHeader.split(" ")[1]; // ✅ استخراج التوكن من Bearer
-//
-//     console.log("AUTH HEADER:", req.headers.authorization);
-//     console.log("TOKEN EXTRACTED:", token);
-//     if (!token) {
-//         return res.status(401).json({ success: false, message: 'No token provided' });
-//     }
-//
-//     try {
-//         const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-//         req.userId = token_decode.userId;
-//         next();
-//     } catch (error) {
-//         console.log("❌ Token verification error:", error);
-//         res.status(401).json({ success: false, message: error.message });
-//     }
-// };
-//
-// export default authUser;

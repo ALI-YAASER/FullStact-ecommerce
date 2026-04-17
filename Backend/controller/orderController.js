@@ -1,19 +1,60 @@
-
 import orderModel from '../models/orderModel.js';
 import userModel from '../models/userModel.js';
 import Stripe from 'stripe';
-
+import axios from 'axios';
 
 const currency = 'inr'
 const deliveryCharge = 10;
 
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+const sendTelegramNotification = async (order) => {
+    try {
+        const token = process.env.TELEGRAM_BOT_TOKEN;
+        const chatId = process.env.TELEGRAM_CHAT_ID;
 
-// ✅ Place order with Cash on Delivery (COD)
+        const itemsList = order.items.map((item, index) => {
+            return `${index + 1}- ${item.name} (${item.quantity} x ${item.price} EGP)`;
+        }).join('\n');
+
+        const message = `
+📦 *إشعار أوردر جديد* 📦
+------------------------------
+👤 *العميل:* ${order.address.firstName} ${order.address.lastName}
+📞 *الهاتف:* ${order.address.phone}
+📍 *المحافظة:* ${order.address.state}
+🏙️ *المدينة:* ${order.address.city}
+
+🛍️ *المنتجات:*
+${itemsList}
+
+⏰ *التاريخ:* ${orderDate}
+💰 *الإجمالي:* *${order.amount} EGP*
+💳 *الدفع:* ${order.paymentMethod}
+------------------------------
+`;
+
+        const url = `https://api.telegram.org/bot${token}/sendMessage`;
+        
+        await axios.post(url, {
+            chat_id: chatId,
+            text: message,
+            parse_mode: 'Markdown' // عشان يخلي الخط Bold وشكله حلو
+        });
+
+        console.log("✅ Telegram Notification Sent!");
+    } catch (error) {
+        console.error("❌ Telegram Error:", error.response?.data || error.message);
+    }
+};
+
+
+
+
 const placeOrder = async (req, res) => {
     try {
-        const userId = req.userId;
+        const userId = req.userId || null;
         const { items, name, amount, address, customerDetails, paymentMethod } = req.body;
 
         const orderData = {
@@ -32,6 +73,7 @@ const placeOrder = async (req, res) => {
         const newOrder = new orderModel(orderData);
         await newOrder.save();
 
+        sendTelegramNotification(newOrder).catch(err => console.error("Telegram Task Error:", err));
         await userModel.findByIdAndUpdate(
             userId,
             { $push: { orders: newOrder._id } },
@@ -128,7 +170,6 @@ const verifyStripe = async (req, res) => {
 }
 
 
-import axios from 'axios';
 
 const placeOrderPaymob = async (req, res) => {
     try {

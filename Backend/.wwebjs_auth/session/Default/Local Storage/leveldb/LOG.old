@@ -1,0 +1,6 @@
+2026/04/17-21:19:24.528 1e828 Reusing MANIFEST D:\FullStact-ecommerce-main\Backend\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
+2026/04/17-21:19:24.540 1e828 Recovering log #3
+2026/04/17-21:19:24.544 1e828 Reusing old log D:\FullStact-ecommerce-main\Backend\.wwebjs_auth\session\Default\Local Storage\leveldb/000003.log 
+2026/04/17-21:20:24.559 22854 Level-0 table #5: started
+2026/04/17-21:20:24.570 22854 Level-0 table #5: 23453 bytes OK
+2026/04/17-21:20:24.575 22854 Delete type=0 #3

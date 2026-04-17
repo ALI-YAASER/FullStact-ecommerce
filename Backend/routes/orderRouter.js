@@ -29,7 +29,7 @@ orderRouter.post('/stripe', authUser , placeOrderStripe);
 orderRouter.post('/paymob', authUser, placeOrderPaymob);
 
 // User Feature
-orderRouter.post('/userorders', authUser, userOrders);
+orderRouter.post('/userorders',authUser, userOrders);
 orderRouter.get('/userorder', authUser, getUserOrders);
 orderRouter.get('/:governorate', getShippingByGovernorate);
 
