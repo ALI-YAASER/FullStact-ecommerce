@@ -25,11 +25,12 @@ const sendTelegramNotification = async (order) => {
 📞 *الهاتف:* ${order.address.phone}
 📍 *المحافظة:* ${order.address.state}
 🏙️ *المدينة:* ${order.address.city}
+⏰ *التاريخ:* ${orderDate}
 
 🛍️ *المنتجات:*
 ${itemsList}
 
-⏰ *التاريخ:* ${orderDate}
+
 💰 *الإجمالي:* *${order.amount} EGP*
 💳 *الدفع:* ${order.paymentMethod}
 ------------------------------
